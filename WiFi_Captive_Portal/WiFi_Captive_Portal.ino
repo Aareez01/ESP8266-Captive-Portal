@@ -97,15 +97,28 @@ String ssid() {
     "<input type=text name=s></input><input type=submit value=\"Change SSID\"></form>" + footer();
 }
 
+
 String postedSSID() {
-  String postedSSID = input("s"); newSSID="<li><b>" + postedSSID + "</b></li>";
+  String postedSSID = input("s");
+  newSSID = "<li><b>" + postedSSID + "</b></li>";
+
+  // Update EEPROM with the new SSID
   for (int i = 0; i < postedSSID.length(); ++i) {
     EEPROM.write(i, postedSSID[i]);
   }
   EEPROM.write(postedSSID.length(), '\0');
   EEPROM.commit();
+
+  // Update the actual SSID
   WiFi.softAP(postedSSID);
+
+  // Update the `currentSSID` variable
+  currentSSID = postedSSID;
+
+  // Return a confirmation message
+  return header("SSID Updated") + "<p>The SSID has been updated to <b>" + postedSSID + "</b>.</p>" + footer();
 }
+
 
 String clear() {
   allPass = "";
